@@ -11,8 +11,8 @@ export const auth = betterAuth({
 					clientId: ZOHO_CLIENT_ID,
 					clientSecret: ZOHO_CLIENT_SECRET,
 					// discoveryUrl: 'https://accounts.zoho.eu/.well-known/openid-configuration',
-					discoveryUrl: "https://locacoeur.zohocreatorportal.eu/",
-					scopes: ["email", "profile"]
+					discoveryUrl: 'https://locacoeur.zohocreatorportal.eu/',
+					scopes: ['email', 'profile']
 				}
 			]
 		})
