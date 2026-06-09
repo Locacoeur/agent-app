@@ -1,4 +1,8 @@
 {
+	"name": "backend",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
     "scripts": {
         "lint": "uvx ruff check .",
         "lint:format": "uvx ruff format ."
