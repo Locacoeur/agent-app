@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "lint": "uvx ruff check .",
+        "lint:format": "uvx ruff format ."
+    }
+}

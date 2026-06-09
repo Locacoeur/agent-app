@@ -41,3 +41,8 @@ yarn-error.log*
 # Sveltekit
 .svelte-kit
 /build
+
+# Python
+.venv
+.python-version
+uv.lock
