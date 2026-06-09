@@ -37,6 +37,7 @@ yarn-error.log*
 .DS_Store
 *.pem
 .vscode
+.ruff_cache
 
 # Sveltekit
 .svelte-kit
