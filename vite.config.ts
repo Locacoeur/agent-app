@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import fs from 'node:fs';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
@@ -32,5 +33,11 @@ export default defineConfig({
 				}
 			}
 		]
+	},
+	server: {
+		https: {
+			key: fs.readFileSync('./key.pem'),
+			cert: fs.readFileSync('./cert.pem')
+		}
 	}
 });
