@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { rvd } from '$lib/rvd.svelte';
 	import { goto } from '$app/navigation';
 	import { Html5QrcodeScanner } from 'html5-qrcode';
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
+	import { updateData } from '$lib/db';
 
 	const { params }: PageProps = $props();
 
@@ -12,8 +12,8 @@
 		// handle the scanned code as you like, for example:
 
 		if (confirm(decodedText)) {
-			rvd.electrodes = decodedText;
 			await html5QrcodeScanner.clear();
+			await updateData({ battery: decodedText }, params.id);
 			await goto(resolve('/intervention/[id]/4', { id: params.id }));
 		}
 	}

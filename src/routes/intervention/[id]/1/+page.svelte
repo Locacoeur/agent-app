@@ -2,9 +2,9 @@
 	import type { PageProps } from './$types';
 	import { extractText } from 'unpdf';
 	import { extractAedG3Data } from '$lib/extraction';
-	import { rvd } from '$lib/rvd.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { saveData } from '$lib/db';
 
 	const { params }: PageProps = $props();
 
@@ -13,15 +13,10 @@
 	const extract = async () => {
 		if (files) {
 			const pdf = await files[0].arrayBuffer();
-			const { totalPages, text } = await extractText(pdf, { mergePages: true });
-
-			console.log(`Total pages: ${totalPages}`);
-			console.log(text);
+			const { text } = await extractText(pdf, { mergePages: true });
 
 			const res = await extractAedG3Data(text);
-
-			rvd.id = params.id;
-			rvd.aed = res;
+			await saveData({ id: params.id, aed_report: res }, params.id);
 
 			await goto(resolve('/intervention/[id]/2', { id: params.id }));
 		}

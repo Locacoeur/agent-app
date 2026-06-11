@@ -48,7 +48,7 @@
 	},
 	"dependencies": {
 		"@valentynb/gs1-parser": "^2.0.0",
-		"better-auth": "^1.6.15",
-		"html5-qrcode": "^2.3.8"
+		"html5-qrcode": "^2.3.8",
+		"idb": "^8.0.3"
 	}
 }

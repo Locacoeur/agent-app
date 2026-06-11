@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import { GS1Parser, type DecodeResult } from '@valentynb/gs1-parser';
 	import { resolve } from '$app/paths';
+	import { updateData } from '$lib/db';
 
 	const { params }: PageProps = $props();
 
@@ -33,6 +34,7 @@
 		}
 
 		if (confirm(result.denormalized)) {
+			await updateData({ electrodes: result.denormalized }, params.id);
 			rvd.electrodes = result.denormalized;
 			await html5QrcodeScanner.clear();
 			await goto(resolve('/intervention/[id]/3', { id: params.id }));

@@ -1,13 +1,16 @@
 <script lang="ts">
-	import { rvd } from '$lib/rvd.svelte';
+	import { updateData } from '$lib/db';
 	import { Html5QrcodeScanner } from 'html5-qrcode';
 	import { onMount } from 'svelte';
+	import type { PageProps } from './$types';
+
+	const { params }: PageProps = $props();
 
 	async function onScanSuccess(decodedText: string) {
 		// handle the scanned code as you like, for example:
 
 		if (confirm(decodedText)) {
-			rvd.electrodes = decodedText;
+			await updateData({ electrodes: decodedText }, params.id);
 			await html5QrcodeScanner.clear();
 		}
 	}

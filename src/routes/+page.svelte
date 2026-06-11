@@ -1,37 +1,33 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import type { PageProps } from './$types';
 
-	const interventions = [
-		{ id: 'INT-2026-021', client: 'Arcelor Lille', label: 'A faire' },
-		{ id: 'INT-2026-017', client: 'Pharma Nord', label: 'En cours' },
-		{ id: 'INT-2026-019', client: 'AgriTech Hub', label: 'A traiter' },
-		{ id: 'INT-2026-004', client: 'DataCooling DC2', label: 'Terminee' }
-	];
+	const { data }: PageProps = $props();
 
-	let synced = false;
+	// let synced = false;
 
-	function syncZoho() {
-		synced = true;
-	}
+	// function syncZoho() {
+	// 	synced = true;
+	// }
 </script>
 
 <div class="mx-auto min-h-screen w-full max-w-3xl px-4 py-4 sm:px-6 lg:px-8">
 	<section class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
 		<button
 			type="button"
-			onclick={syncZoho}
+			// onclick={syncZoho}
 			class="w-full rounded-2xl bg-[#2563EB] px-4 py-5 text-base font-bold text-white shadow-sm transition hover:bg-[#1d4ed8] active:scale-[0.99]"
 		>
 			Synchroniser avec Zoho
 		</button>
-		{#if synced}
+		<!-- {#if synced}
 			<p class="mt-2 text-center text-xs font-medium text-[#15803d]">Synchronisation lancee.</p>
-		{/if}
+		{/if} -->
 	</section>
 
 	<section class="mt-4 space-y-3">
-		{#each interventions as intervention (intervention.id)}
+		{#each data.interventions as intervention (intervention.id)}
 			<article class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
 				<div class="flex items-start justify-between gap-3">
 					<div>
