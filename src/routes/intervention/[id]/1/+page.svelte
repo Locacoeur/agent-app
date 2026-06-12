@@ -10,6 +10,7 @@
 
 	let files = $state<FileList | null>(null);
 
+	// Extrait les informations de l'aed report upload, le parse et l'enregistre dans idb
 	const extract = async () => {
 		if (files) {
 			const pdf = await files[0].arrayBuffer();

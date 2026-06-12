@@ -17,6 +17,6 @@ export async function loadData(key: string) {
 }
 
 export async function updateData(data: object, key: string) {
-	const d = db.get(STORE, key);
-	await db.add(STORE, { ...d, ...data });
+	const d = await db.get(STORE, key);
+	await db.put(STORE, { ...(d ?? {}), ...data }, key);
 }

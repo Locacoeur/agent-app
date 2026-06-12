@@ -12,41 +12,43 @@
 	Settings.twoDigitCutoffYear = 90;
 
 	const { params }: PageProps = $props();
-	let isOpenInfos = $state(false);
 	let isOpen = $state(false);
 
 	let result = $state<any>();
 
-	// Calcule la date d'expiration à partir du qr code
 	const expDate = $derived.by(() => {
 		if (!result?.['17']) return null;
 
 		const value = result?.['17'];
 
 		return DateTime.fromFormat(value, 'yyMMdd', { locale: 'fr' });
+		// return new Date(
+		// 	2000 + Number(value.slice(0, 2)),
+		// 	Number(value.slice(2, 4)) - 1,
+		// 	Number(value.slice(4, 6))
+		// );
 	});
-
-	// Récupère le numéro de série de l'électrode
 	const serialNumber = $derived.by(() => {
 		if (!result?.['10']) return null;
 		return result['10'];
 	});
 
-	// Si on a bien scanné le QR code
 	async function onScanSuccess(decodedText: string) {
+		// handle the scanned code as you like, for example:
+
 		// parse GS1 format (for electrodes)
 		try {
 			const gs1 = new GS1DigitalLinkToolkit();
 
-			// Parse les informations à partir du scan (format GS1)
-			result = gs1.extractFromGS1elementStrings(decodedText.replaceAll(' ', ''));
+			// returns a DecodeResult object or throws an Error in case of parsing errors
+			result = gs1.extractFromGS1elementStrings(decodedText.replaceAll(' ', '')); //new GS1Reader(decodedText).lookup;
 		} catch (error) {
 			alert(error);
 			console.error('Barcode parsing failed:', error);
 			return;
 		}
 
-		isOpenInfos = true;
+		isOpen = true;
 		html5QrcodeScanner.pause(true);
 	}
 
@@ -56,7 +58,6 @@
 		);
 	}
 
-	// Maths shenanigans to set QR Code square on screen
 	let qrboxFunction = function (viewfinderWidth: number, viewfinderHeight: number) {
 		let minEdgePercentage = 0.7; // 70%
 		let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
@@ -84,24 +85,10 @@
 	});
 
 	const onconfirm = async () => {
-		console.log({ electrodes: { expDate: expDate?.toISODate(), serialNumber } });
-		await updateData({ electrodes: { expDate: expDate?.toISODate(), serialNumber } }, params.id);
+		//TODO
+		await updateData({ electrodes2: { expDate, serialNumber } }, params.id);
 		await html5QrcodeScanner.clear();
 		await goto(resolve('/intervention/[id]/3', { id: params.id }));
-	};
-
-	const onchange = async () => {
-		await updateData({ electrodes: { expDate: expDate?.toISODate(), serialNumber } }, params.id);
-		await html5QrcodeScanner.clear();
-		await goto(resolve('/intervention/[id]/2/add', { id: params.id }));
-	};
-
-	const onconfirminfos = async () => {
-		if (expDate && expDate?.minus({ months: 2 }) <= DateTime.now()) {
-			isOpen = true;
-		} else {
-			await onconfirm();
-		}
 	};
 </script>
 
@@ -112,16 +99,16 @@
 		<h1
 			class="text-heading mb-22 justify-self-center text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
 		>
-			Electrode
+			Ajouter une electrode
 		</h1>
 		<div id="reader"></div>
 	</section>
 </div>
 <Modal
-	bind:open={isOpenInfos}
+	bind:open={isOpen}
 	title="Vérifier les informations"
 	confirmLabel="Valider"
-	onconfirm={onconfirminfos}
+	{onconfirm}
 	oncancel={() => html5QrcodeScanner.resume()}
 >
 	Vérifier les informations: <br />
@@ -129,18 +116,4 @@
 		<li>Numéro de série: <b>{serialNumber}</b></li>
 		<li>Date de peremption: <b>{expDate?.toFormat('yyyy-MM-dd')}</b></li>
 	</ul>
-</Modal>
-<Modal
-	bind:open={isOpen}
-	title="Attention"
-	confirmLabel="Changer la batterie"
-	onconfirm={onchange}
-	oncancel={() => html5QrcodeScanner.resume()}
->
-	La date de peremption des electrodes arrive dans moins de <b>2 mois.</b> <br />
-	Veuillez procéder à un changement. <br /><br />
-	<button
-		class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#2563EB] hover:text-[#2563EB] disabled:cursor-not-allowed disabled:opacity-50"
-		onclick={onconfirm}>Passer</button
-	>
 </Modal>

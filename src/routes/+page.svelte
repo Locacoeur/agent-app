@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
+	import { Modal } from '$lib/components';
+	let isOpen = $state(false);
 
 	const { data }: PageProps = $props();
 
@@ -16,6 +18,7 @@
 	<section class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
 		<button
 			type="button"
+			onclick={() => (isOpen = true)}
 			// onclick={syncZoho}
 			class="w-full rounded-2xl bg-[#2563EB] px-4 py-5 text-base font-bold text-white shadow-sm transition hover:bg-[#1d4ed8] active:scale-[0.99]"
 		>
@@ -63,3 +66,9 @@
 		{/each}
 	</section>
 </div>
+<Modal
+	bind:open={isOpen}
+	title="Synchroniser avec Zoho"
+	description="Cette action va mettre à jour toutes les interventions. Continuer ?"
+	confirmLabel="Synchroniser"
+></Modal>

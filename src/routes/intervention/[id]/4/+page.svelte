@@ -1,18 +1,25 @@
 <script lang="ts">
-	import { updateData } from '$lib/db';
+	import type { PageProps } from './$types.js';
+	import { goto } from '$app/navigation';
 	import { Html5QrcodeScanner } from 'html5-qrcode';
 	import { onMount } from 'svelte';
-	import type { PageProps } from './$types';
+	import { resolve } from '$app/paths';
+	import { updateData } from '$lib/db';
+	import { Modal } from '$lib/components';
 
 	const { params }: PageProps = $props();
+	let isOpen = $state(false);
+
+	let result = $state<any>();
 
 	async function onScanSuccess(decodedText: string) {
 		// handle the scanned code as you like, for example:
 
-		if (confirm(decodedText)) {
-			await updateData({ electrodes: decodedText }, params.id);
-			await html5QrcodeScanner.clear();
-		}
+		// parse GS1 format (for electrodes)
+		result = decodedText;
+
+		isOpen = true;
+		html5QrcodeScanner.pause(true);
 	}
 
 	function isMobileDevice(): boolean {
@@ -44,8 +51,14 @@
 			},
 			/* verbose= */ false
 		);
-		html5QrcodeScanner.render(onScanSuccess, () => {});
+		html5QrcodeScanner.render(onScanSuccess, undefined);
 	});
+
+	const onconfirm = async () => {
+		await updateData({ aed: { serialNumber: result } }, params.id);
+		await html5QrcodeScanner.clear();
+		await goto(resolve('/intervention/[id]/end', { id: params.id }));
+	};
 </script>
 
 <div class="mx-auto min-h-screen w-full max-w-3xl px-4 sm:px-6 lg:px-8">
@@ -60,3 +73,15 @@
 		<div id="reader"></div>
 	</section>
 </div>
+<Modal
+	bind:open={isOpen}
+	title="Vérifier les informations"
+	confirmLabel="Valider"
+	{onconfirm}
+	oncancel={() => html5QrcodeScanner.resume()}
+>
+	Vérifier les informations: <br />
+	<ul>
+		<li>Numéro de série: <b>{result}</b></li>
+	</ul>
+</Modal>
