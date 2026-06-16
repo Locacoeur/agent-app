@@ -5,10 +5,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import fs from 'node:fs';
 
 export default defineConfig({
-	plugins: [
-		tailwindcss(),
-		sveltekit()
-	],
+	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
@@ -36,7 +33,7 @@ export default defineConfig({
 				}
 			}
 		]
-	},
+	}
 	// server: {
 	// 	https: {
 	// 		key: fs.readFileSync('./key.pem'),

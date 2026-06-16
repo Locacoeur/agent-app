@@ -23,7 +23,6 @@ const ASSETS = [
 	...files // everything in `static`
 ];
 
-
 self.addEventListener('install', (event) => {
 	// Create a new cache and add all files to it
 	async function addFilesToCache() {

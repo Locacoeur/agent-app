@@ -1,0 +1,16 @@
+node_modules
+.svelte-kit
+.git
+build
+dist
+docs
+.npmrc
+.prettierignore
+.prettierrc
+cert.pem
+compose.yml
+eslint.config.js
+key.pem
+openssl.cnf
+playwright.config.ts
+README.md
