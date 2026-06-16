@@ -4,6 +4,13 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import fs from 'node:fs';
 
+const httpsConfig = fs.existsSync('./key.pem') && fs.existsSync('./cert.pem')
+	? {
+		key: fs.readFileSync('./key.pem'),
+		cert: fs.readFileSync('./cert.pem')
+	}
+	: undefined;
+
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	test: {
@@ -35,9 +42,6 @@ export default defineConfig({
 		]
 	},
 	server: {
-		https: {
-			key: fs.readFileSync('./key.pem'),
-			cert: fs.readFileSync('./cert.pem')
-		}
+		https: httpsConfig
 	}
 });
