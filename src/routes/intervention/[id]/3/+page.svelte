@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { updateData } from '$lib/db';
-	import { Modal } from '$lib/components';
+	import Modal from '$lib/components/Modal.svelte';
 
 	Settings.twoDigitCutoffYear = 90;
 

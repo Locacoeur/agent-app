@@ -18,5 +18,13 @@ export async function loadData(key: string) {
 
 export async function updateData(data: object, key: string) {
 	const d = await db.get(STORE, key);
+	if (d === undefined) {
+		throw Error(`${key} is not in idb storage yet`)
+	}
+	await db.put(STORE, { ...d, ...data }, key);
+}
+
+export async function updateOrCreateData(data: object, key: string) {
+	const d = await db.get(STORE, key);
 	await db.put(STORE, { ...(d ?? {}), ...data }, key);
 }

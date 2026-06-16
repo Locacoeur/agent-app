@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
-	import { Modal } from '$lib/components';
+	import Modal from '$lib/components/Modal.svelte';
 	let isOpen = $state(false);
 
 	const { data }: PageProps = $props();

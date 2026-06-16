@@ -4334,30 +4334,6 @@ export default class GS1DigitalLinkToolkit {
 		];
 
 		// Element Strings with predefined length using GS1 Application Identifiers, as defined in GS1 Gen Specs - see Figure 7.8.4-2 of GS1 Gen Specs v18 at https://www.gs1.org/docs/barcodes/GS1_General_Specifications.pdf
-		const fixedLengthTable = {
-			'00': 20,
-			'01': 16,
-			'02': 16,
-			'03': 16,
-			'04': 18,
-			11: 8,
-			12: 8,
-			13: 8,
-			14: 8,
-			15: 8,
-			16: 8,
-			17: 8,
-			18: 8,
-			19: 4,
-			20: 4,
-			31: 10,
-			32: 10,
-			33: 10,
-			34: 10,
-			35: 10,
-			36: 10,
-			41: 16
-		};
 
 		// tableP indicates for any initial two digits, what is the total length of the numeric AI key, e.g. "80":4 --> all AI keys beginning with 80 are four digit AI keys, 80xx
 		const tableP = {
@@ -5165,12 +5141,6 @@ export default class GS1DigitalLinkToolkit {
 			return ai.fixedLength == false;
 		}
 
-		function getMatchesKeyword(keyword) {
-			return function (ai) {
-				return ai.title.indexOf(keyword) > -1;
-			};
-		}
-
 		function getMatchesAI(num) {
 			return function (el) {
 				return el.ai == num;
@@ -5241,156 +5211,11 @@ export default class GS1DigitalLinkToolkit {
 
 		// from GS1 Gen Specs Figure 4.14.1-1. Invalid pairs of element strings
 		// this table is symmetrical
-		const invalidAssociations = [
-			{
-				rule: 'All occurrences of GTIN SHALL have one value.  It is for example not allowed to include GTINs of other packaging levels.',
-				condition1: '01',
-				condition2: ['01']
-			},
-			{
-				rule: 'GTIN of contained trade items is intended to list the trade items contained in a logistic unit, and SHALL NOT be used to identify the contents of a trade item',
-				condition1: '02',
-				condition2: ['01']
-			},
-			{
-				rule: 'The count of units contained SHALL only be used with GTIN of contained trade items.',
-				condition1: '37',
-				condition2: ['01']
-			},
-			{
-				rule: 'A trade item SHALL NOT be identified as a coupon.',
-				condition1: '255',
-				condition2: ['01']
-			},
-			{
-				rule: 'Only one ship to postal code SHALL be applied on the same physical entity',
-				condition1: '420',
-				condition2: ['421']
-			},
-			{
-				rule: 'Country of origin, initial processing, processing, or disassembly SHALL NOT be used in combination with country of full porcessing, since this would lead to ambiguous data.',
-				condition1: '426',
-				condition2: ['422', '423', '424', '425']
-			},
-			{
-				rule: 'The element strings coupon value, percentage discount of a coupon and loyalty points of a coupon SHALL NOT be applied in combination.',
-				condition1: '390\d',
-				condition2: ['394\d', '8111']
-			},
-			{
-				rule: 'Only one amount patable element string SHALL be applied on a payment slip.',
-				condition1: '391\d',
-				condition2: ['390\d']
-			},
-			{
-				rule: 'Only one amount payable element string SHALL be applied on a variable measure trade item.',
-				condition1: '392\d',
-				condition2: ['393\d']
-			},
-			{
-				rule: 'The element strings percentage discount of a coupon and the loyalty points of a coupon SHALL NOT be applied in combination.',
-				condition1: '394\d',
-				condition2: ['8111']
-			},
-			{
-				rule: 'The GTIN SHALL NOT be used in combination with the identification of an individual trade item piece.  The GTIN of the trade item to which the individual trade item piece belongs is contained in the element string',
-				condition1: '8006',
-				condition2: ['01']
-			},
-			{
-				rule: 'Only one Global Service Relation Number (recipient of provider) SHALL be applied at one time for identification of an individual in a given service relationship',
-				condition1: '8018',
-				condition2: ['8017']
-			}
-		];
 
 		// need to also have mandatory association table and forbidden association table from GS1 Gen Specs
 
 		// from Figure 4.14.2-1. Mandatory association of element strings
 		// this table is not symmetrical - it's one-way, given condition, require OR, AND, XOR to be satisfied where specified
-		const mandatoryAssociations = [
-			{
-				designation: 'GTIN of a variable measure trade item scanned at POS',
-				rule: 'The GTIN of a variable measure trade item scanned at POS SHALL occur in combination with: * variable count of items; or * a trade measure ; Note: Master data will be needed to determine whether the GTIN represents a variable measure trade item scanned at POS. Also see the note below this table.',
-				condition: ['01'],
-				conditionN1: '0',
-				OR: ['30', '3\d{3}']
-			},
-
-			{
-				designation: 'GTIN of a variable measure trade item not scanned at POS',
-				rule: "The GTIN of a variable measure trade item not scanned at POS SHALL occur in combination with: * variable count of items; or * a trade measure; or * the dimensions of a roll product. Note: The first position of the GTIN is '9' for such trade items. Also see the note below this table.",
-				condition: ['01', '02'],
-				conditionN1: '9',
-				OR: ['30', '3\d{3}', '8001']
-			},
-			{
-				designation: 'GTIN of a custom trade item.',
-				rule: "The GTIN of a custom trade item SHALL be used in combination with the Made-to-Order variation number. Note: The first position of the GTIN is '9' for such trade items.",
-				condition: ['01'],
-				conditionN1: '9',
-				EXACTLY: ['242']
-			},
-
-			{
-				designation: 'GTIN of contained trade items',
-				rule: 'The GTIN of contained trade items SHALL occur in combination with an SSCC and the count of the trade items.',
-				condition: ['02'],
-				AND: ['00', '37']
-			},
-			{
-				designation: 'Batch/lot number',
-				rule: 'Batch/lot number SHALL occur in combination with: * a GTIN; or * a GTIN of contained trade items; or * the identification of an individual trade item piece.',
-				condition: ['10'],
-				XOR: ['01', '02', '8006']
-			},
-			{
-				designation:
-					'Production date, packaging date, best before date, sell by date, expiration date (of a trade item)',
-				rule: 'These dates SHALL occur in combination with: * a GTIN; or * a GTIN of contained trade items; or * the identification of an individual trade item piece.',
-				condition: ['11', '13', '15', '16', '17'],
-				XOR: ['01', '02', '8006']
-			},
-
-			{
-				designation: 'Due date',
-				rule: 'The due date SHALL occur in combination with the payment slip reference number and the GLN of the invoicing party',
-				condition: ['12'],
-				AND: ['8020', '415']
-			},
-
-			{
-				designation: 'Expiration date (of a coupon)',
-				rule: 'The expiration date of a coupon SHALL occur in combination with the GCN.',
-				condition: ['17'],
-				EXACTLY: ['255']
-			},
-
-			{ designation: '', rule: '', condition: ['20'], XOR: ['01', '02', '8006'] },
-			{ designation: '', rule: '', condition: ['21'], XOR: ['01', '8006'] },
-
-			{ designation: '', rule: '', condition: ['22'], EXACTLY: ['01'] },
-			{ designation: '', rule: '', condition: ['240'], XOR: ['01', '02', '8006'] },
-			{ designation: '', rule: '', condition: ['241'], XOR: ['01', '02', '8006'] },
-
-			// *** 242 rule has N1=9 condition on 01,02,8006
-
-			{ designation: '', rule: '', condition: ['243'], EXACTLY: ['01'] },
-
-			{ designation: '', rule: '', condition: ['250'], AND: ['21'], XOR: ['01', '8006'] },
-
-			{ designation: '', rule: '', condition: ['251'], XOR: ['01', '8006'] },
-
-			{ designation: '', rule: '', condition: ['254'], EXACTLY: ['414'] },
-
-			{ designation: '', rule: '', condition: ['30'], XOR: ['01', '02'] },
-			{ designation: '', rule: '', condition: ['3\d{3}'], XOR: ['01', '02'] },
-			{ designation: '', rule: '', condition: ['3\d{3}'], OR: ['00', '01'] },
-			{ designation: '', rule: '', condition: ['337\d'], EXACTLY: ['01'] },
-			{ designation: '', rule: '', condition: ['37'], EXACTLY: ['02'] },
-			{ designation: '', rule: '', condition: ['390\d'], AND: ['8020', '415'] },
-			{ designation: '', rule: '', condition: ['390\d'], EXACTLY: ['255'] }
-		];
 
 		const shortCodeToNumeric = {};
 		for (let key in aiShortCode) {

@@ -48,3 +48,5 @@ yarn-error.log*
 .venv
 .python-version
 uv.lock
+# Playwright
+test-results
