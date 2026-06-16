@@ -7,11 +7,7 @@ import fs from 'node:fs';
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
-		sveltekit({
-			compilerOptions: {
-				experimental: { async: true }
-			}
-		})
+		sveltekit()
 	],
 	test: {
 		expect: { requireAssertions: true },
@@ -41,10 +37,10 @@ export default defineConfig({
 			}
 		]
 	},
-	server: {
-		https: {
-			key: fs.readFileSync('./key.pem'),
-			cert: fs.readFileSync('./cert.pem')
-		}
-	}
+	// server: {
+	// 	https: {
+	// 		key: fs.readFileSync('./key.pem'),
+	// 		cert: fs.readFileSync('./cert.pem')
+	// 	}
+	// }
 });
