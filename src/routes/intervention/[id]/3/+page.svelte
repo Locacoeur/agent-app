@@ -85,7 +85,7 @@
 
 	const onconfirm = async () => {
 		await updateData(
-			{ battery: { fabricationDate: fabricationDate?.toISODate(), serialNumber } },
+			{ battery: { fabrication_date: fabricationDate?.toISODate(), serial_number: serialNumber } },
 			params.id
 		);
 		await html5QrcodeScanner.clear();
@@ -106,14 +106,10 @@
 
 <div class="mx-auto min-h-screen w-full max-w-3xl px-4 sm:px-6 lg:px-8">
 	<section
-		class="min-h-screen content-center rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
+		class="min-h-screen content-center rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
 	>
-		<h1
-			class="text-heading mb-22 justify-self-center text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
-		>
-			Batterie
-		</h1>
-		<div id="reader"></div>
+		<h1 class="text-heading text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">Batterie</h1>
+		<div id="reader" class="mt-6"></div>
 	</section>
 </div>
 <Modal

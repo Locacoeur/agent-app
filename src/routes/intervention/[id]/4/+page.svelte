@@ -4,7 +4,7 @@
 	import { Html5QrcodeScanner } from 'html5-qrcode';
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
-	import { updateData } from '$lib/db';
+	import { loadData, updateData } from '$lib/db';
 	import Modal from '$lib/components/Modal.svelte';
 
 	const { params }: PageProps = $props();
@@ -13,6 +13,10 @@
 	let result = $state<any>();
 
 	async function onScanSuccess(decodedText: string) {
+		if ((await loadData(params.id))?.device_model == 'g5' && decodedText[1] === 'D') {
+			alert('Le numéro de série ne correspond pas à un G5. Veuillez recommencer.');
+			return;
+		}
 		// handle the scanned code as you like, for example:
 
 		// parse GS1 format (for electrodes)
@@ -55,7 +59,7 @@
 	});
 
 	const onconfirm = async () => {
-		await updateData({ aed: { serialNumber: result } }, params.id);
+		await updateData({ aed: { serial_number: result } }, params.id);
 		await html5QrcodeScanner.clear();
 		await goto(resolve('/intervention/[id]/end', { id: params.id }));
 	};
@@ -63,14 +67,12 @@
 
 <div class="mx-auto min-h-screen w-full max-w-3xl px-4 sm:px-6 lg:px-8">
 	<section
-		class="min-h-screen content-center rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
+		class="min-h-screen content-center rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
 	>
-		<h1
-			class="text-heading mb-22 justify-self-center text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
-		>
+		<h1 class="text-heading text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
 			Défibrillateur
 		</h1>
-		<div id="reader"></div>
+		<div id="reader" class="mt-6"></div>
 	</section>
 </div>
 <Modal

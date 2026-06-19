@@ -42,6 +42,16 @@
 
 			// returns a DecodeResult object or throws an Error in case of parsing errors
 			result = gs1.extractFromGS1elementStrings(decodedText.replaceAll(' ', '')); //new GS1Reader(decodedText).lookup;
+
+			if (!result?.['17']) {
+				alert('Aucune date de péremption trouvée. Ce code ne correspond pas à une électrode.');
+				return;
+			}
+
+			if (expDate! < DateTime.now()) {
+				alert('Électrode périmée. Le code ne peut pas être utilisé.');
+				return;
+			}
 		} catch (error) {
 			alert(error);
 			console.error('Barcode parsing failed:', error);
@@ -86,7 +96,10 @@
 
 	const onconfirm = async () => {
 		//TODO
-		await updateData({ electrodes2: { expDate, serialNumber } }, params.id);
+		await updateData(
+			{ electrodes2: { expiration_date: expDate?.toISODate(), serial_number: serialNumber } },
+			params.id
+		);
 		await html5QrcodeScanner.clear();
 		await goto(resolve('/intervention/[id]/3', { id: params.id }));
 	};

@@ -102,3 +102,58 @@ export async function extractAedG3Data(
 		return { erreur: e instanceof Error ? e.message : String(e) };
 	}
 }
+
+export async function extractAedG5Data(text: string): Promise<Record<string, any>> {
+	/**
+	 * Extract relevant data and errors from AED G5 text.
+	 *
+	 * @param text Text extracted from the AED G5 PDF.
+	 * @returns Object containing extracted data and errors.
+	 */
+
+	const keywords = [
+		'N° série DAE',
+		'Capacité restante de la batterie',
+		"Date d'installation :",
+		'Rapport DAE - Erreurs en cours',
+		'Date / Heure:'
+	];
+
+	const results: Record<string, any> = {};
+
+	// Extract keyword data
+	for (const keyword of keywords) {
+		const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const pattern = new RegExp(`${escapedKeyword}[\\s:]*([^\\n]*)`);
+		const match = text.match(pattern);
+
+		if (match) {
+			results[keyword] = match[1].trim();
+		}
+	}
+
+	// Extract errors
+	const errorPattern = /(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2})\s+(0x[0-9A-Fa-f]+)/g;
+
+	const errors: Array<[string, string]> = [];
+	let match: RegExpExecArray | null;
+
+	while ((match = errorPattern.exec(text)) !== null) {
+		errors.push([match[1], match[2]]);
+	}
+
+	results.errors = errors;
+
+	// Log error information
+	if (errors.length > 0) {
+		console.info(`Errors found: ${errors.length}`);
+
+		for (const [dateTime, errorId] of errors) {
+			console.info(`Date/Time: ${dateTime}, Error ID: ${errorId}`);
+		}
+	} else {
+		console.debug('No errors found in the section.');
+	}
+
+	return results;
+}

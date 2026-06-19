@@ -60,33 +60,35 @@ self.addEventListener('fetch', (event) => {
 			}
 		}
 
+		return await fetch(event.request);
+
 		// for everything else, try the network first, but
 		// fall back to the cache if we're offline
-		try {
-			const response = await fetch(event.request);
+		// 	try {
+		// 		const response = await fetch(event.request);
 
-			// if we're offline, fetch can return a value that is not a Response
-			// instead of throwing - and we can't pass this non-Response to respondWith
-			if (!(response instanceof Response)) {
-				throw new Error('invalid response from fetch');
-			}
+		// 		// if we're offline, fetch can return a value that is not a Response
+		// 		// instead of throwing - and we can't pass this non-Response to respondWith
+		// 		if (!(response instanceof Response)) {
+		// 			throw new Error('invalid response from fetch');
+		// 		}
 
-			if (response.status === 200 && !response.headers.get('cache-control')?.includes('no-store')) {
-				cache.put(event.request, response.clone());
-			}
+		// 		if (response.status === 200 && !response.headers.get('cache-control')?.includes('no-store')) {
+		// 			cache.put(event.request, response.clone());
+		// 		}
 
-			return response;
-		} catch (err) {
-			const response = await cache.match(event.request);
+		// 		return response;
+		// 	} catch (err) {
+		// 		const response = await cache.match(event.request);
 
-			if (response) {
-				return response;
-			}
+		// 		if (response) {
+		// 			return response;
+		// 		}
 
-			// if there's no cache, then just error out
-			// as there is nothing we can do to respond to this request
-			throw err;
-		}
+		// 		// if there's no cache, then just error out
+		// 		// as there is nothing we can do to respond to this request
+		// 		throw err;
+		// 	}
 	}
 
 	event.respondWith(respond());

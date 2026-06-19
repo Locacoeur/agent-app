@@ -13,13 +13,17 @@ export async function saveData(data: any, key: string) {
 }
 
 export async function loadData(key: string) {
-	return db.get(STORE, key);
+	return await db.get(STORE, key);
+}
+
+export async function deleteData(key: string) {
+	await db.delete(STORE, key);
 }
 
 export async function updateData(data: object, key: string) {
 	const d = await db.get(STORE, key);
 	if (d === undefined) {
-		throw Error(`${key} is not in idb storage yet`)
+		throw Error(`${key} is not in idb storage yet`);
 	}
 	await db.put(STORE, { ...d, ...data }, key);
 }

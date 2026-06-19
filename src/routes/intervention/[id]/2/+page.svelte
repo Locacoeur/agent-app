@@ -22,7 +22,6 @@
 		if (!result?.['17']) return null;
 
 		const value = result?.['17'];
-
 		return DateTime.fromFormat(value, 'yyMMdd', { locale: 'fr' });
 	});
 
@@ -40,6 +39,16 @@
 
 			// Parse les informations à partir du scan (format GS1)
 			result = gs1.extractFromGS1elementStrings(decodedText.replaceAll(' ', ''));
+
+			if (!result?.['17']) {
+				alert('Aucune date de péremption trouvée. Ce code ne correspond pas à une électrode.');
+				return;
+			}
+
+			if (expDate! < DateTime.now()) {
+				alert('Électrode périmée. Le code ne peut pas être utilisé.');
+				return;
+			}
 		} catch (error) {
 			alert(error);
 			console.error('Barcode parsing failed:', error);
@@ -84,14 +93,19 @@
 	});
 
 	const onconfirm = async () => {
-		console.log({ electrodes: { expDate: expDate?.toISODate(), serialNumber } });
-		await updateData({ electrodes: { expDate: expDate?.toISODate(), serialNumber } }, params.id);
+		await updateData(
+			{ electrodes: { expiration_date: expDate?.toISODate(), serial_number: serialNumber } },
+			params.id
+		);
 		await html5QrcodeScanner.clear();
 		await goto(resolve('/intervention/[id]/3', { id: params.id }));
 	};
 
 	const onchange = async () => {
-		await updateData({ electrodes: { expDate: expDate?.toISODate(), serialNumber } }, params.id);
+		await updateData(
+			{ electrodes: { expiration_date: expDate?.toISODate(), serial_number: serialNumber } },
+			params.id
+		);
 		await html5QrcodeScanner.clear();
 		await goto(resolve('/intervention/[id]/2/add', { id: params.id }));
 	};
@@ -107,14 +121,12 @@
 
 <div class="mx-auto min-h-screen w-full max-w-3xl px-4 sm:px-6 lg:px-8">
 	<section
-		class="min-h-screen content-center rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
+		class="min-h-screen content-center rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
 	>
-		<h1
-			class="text-heading mb-22 justify-self-center text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
-		>
-			Electrode
+		<h1 class="text-heading text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+			Électrode
 		</h1>
-		<div id="reader"></div>
+		<div id="reader" class="mt-6"></div>
 	</section>
 </div>
 <Modal
