@@ -12,21 +12,22 @@ export const load: PageLoad = async () => {
 			{ id: 'INT-2026-004', client: 'DataCooling DC2', label: 'Terminee' }
 		];
 
-		const infos: (Intervention & { state: string })[] | undefined = await loadData('zoho-infos');
+		// const infos: (Intervention & { state: string })[] | undefined = await loadData('zoho-infos');
 
-		for (const interv of data) {
-			const existing = infos?.find((elem: Intervention) => elem.id === interv.id);
-			if (!existing) {
-				continue;
-			} else {
-				//TODO: finir
-				infos?.push({ ...interv, state: 'A faire' });
-				await saveData(infos, 'zoho-infos');
-			}
-		}
+		// for (const interv of data) {
+		// 	const existing = infos?.find((elem: Intervention) => elem.id === interv.id);
+		// 	if (!existing) {
+		// 		continue;
+		// 	} else {
+		// 		//TODO: finir
+		// 		infos?.push({ ...interv, state: 'A faire' });
+		// 		await saveData(infos, 'zoho-infos');
+		// 	}
+		// }
 
-		// await saveData(data, 'zoho-infos');
-		return infos;
+		await saveData(data, 'zoho-infos');
+		return data;
+		// return infos;
 	} catch {
 		return await loadData('zoho-infos');
 	}
