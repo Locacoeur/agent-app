@@ -30,7 +30,7 @@
 	</section>
 
 	<section class="mt-4 space-y-3">
-		{#each Object.values(data) as intervention}
+		{#each data.interventions as intervention}
 			<article class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
 				<div class="flex items-start justify-between gap-3">
 					<div>

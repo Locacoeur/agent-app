@@ -104,6 +104,12 @@
 				type="button"
 				onclick={prepareZoho}
 				class="rounded-2xl bg-[#2563EB] px-4 py-4 text-base font-bold text-white shadow-sm transition hover:bg-[#1d4ed8] active:scale-[0.99]"
+				disabled={!(
+					summary.aed_report_file &&
+					summary.electrodes &&
+					summary.battery &&
+					summary.aed
+				)}
 			>
 				Envoyer à Zoho
 			</button>
